@@ -1,0 +1,70 @@
+
+//wifi ağına baglanmak ve webe yazmak
+#define  Wifi_ismi "VodafoneNet"
+#define  Wifi_sifresi "0852819829"
+#define SERVER "https://github.com/"
+String API ("545736916579b582973ddd472a7a4c3ec459399c");
+String CHANNEL ("BİLDİRİM");
+
+//eger 3.- 4.- 5.- 5.pine 1 bilgisi gelirse 
+void setup() {pinMode(3,INPUT);
+pinMode(4,INPUT);
+pinMode(5,INPUT);
+pinMode(6,INPUT);
+Serial.begin(1152000);
+Serial.println("AT");
+delay(5000);
+if(Serial.find("OK"));
+Serial.println("AT+CWMODE=1");
+delay(3000);
+String baglantiKomutu = String("AT+CWJAP=\"") + Wifi_ismi + "\"\"" +Wifi_sifresi + "\"";
+Serial.println(baglantiKomutu);
+delay(2000);
+}
+
+void loop() {
+if(digitalRead(3)){
+ digitalWrite(3,1);
+} 
+  verigithub(CHANNEL,"kapı açıldı");
+
+}
+void verigithub(String CHANNEL,String text){
+
+
+Serial.println(String("AT+CIPSTART=\"TCP\",\"") + SERVER +"\",80");
+ delay(3000);
+  String deneme = ("POST https://github.com/Hlsazdmr/BILDIRIM");
+  deneme += (CHANNEL);
+  deneme += ("/ HTTP/1.1");
+  deneme += ("\r\n");
+  deneme += ("Host: ");
+  deneme += (SERVER);
+  deneme += ("\r\n");
+  deneme += ("Authorization: Token ");
+  deneme += (API);
+  deneme += ("\r\n");
+  deneme += ("Content-Type: application/json");
+  deneme += ("\r\n");
+  deneme += ("Content-Length: ");
+  deneme += (text.length() + 46);
+  deneme += ("\r\n\r\n");
+  deneme += ("{ \"body\" : \"");
+  deneme += (text);
+  deneme += ("\", \"message_type\" : \"text/plain\" }");
+  deneme += ("\r\n\r\n");
+
+  Serial.print("AT+CIPSEND=");
+  delay(100);
+  Serial.println(deneme.length());
+  // Sorun oluşmadıysa veriyi gönder.
+  if (Serial.find(">")) {
+    Serial.println(deneme);
+    Serial.println("AT+CIPCLOSE=0");
+    delay(100);
+
+  } else {
+    Serial.println("AT+CIPCLOSE=0");
+  }
+
+}
